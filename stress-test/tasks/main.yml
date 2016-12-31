@@ -1,0 +1,25 @@
+---
+# tasks file for stress-test
+
+- name: Copy stress-ng to the end machine
+  unarchive: src=../files/stress-ng.tar.gz dest=/tmp
+  tags: run-stress
+
+- name: To get RAM on the VM
+  set_fact: mem="{{ ((ansible_memtotal_mb * 0.90)/1024) | int }}"
+  tags: run-stress
+
+- name: To get total disk space on the VM
+  set_fact: disk_space="{{ ((ansible_mounts[0].size_available * 0.9)/(1024*1024*1024)) | int }}"
+  tags: run-stress
+
+- shell: make chdir=/tmp/stress-ng-0.03.11
+  tags: run-stress
+  
+- name: Ececute the stress command with parameters for creating stress
+  shell: nohup ./stress-ng -c {{ ansible_processor_vcpus }} -m {{ mem }} --vm-bytes 1G -d {{ disk_space }} --timeout 4h & chdir=/tmp/stress-ng-0.03.11
+  tags: run-stress
+
+- name: Stop tests on the machine by killing stress process
+  shell: pkill -9 stress
+  tags: stop-stress
