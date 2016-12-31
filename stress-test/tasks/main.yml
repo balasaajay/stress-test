@@ -17,9 +17,10 @@
   tags: run-stress
   
 - name: Ececute the stress command with parameters for creating stress
-  shell: nohup ./stress-ng -c {{ ansible_processor_vcpus }} -m {{ mem }} --vm-bytes 1G -d {{ disk_space }} --timeout 4h & chdir=/tmp/stress-ng-0.03.11
+  shell: nohup ./stress-ng -c {{ ansible_processor_vcpus }} -m {{ mem }} --vm-bytes 1G -d {{ disk_space }} --timeout 4h --metrics-brief & chdir=/tmp/stress-ng-0.03.11
   tags: run-stress
 
 - name: Stop tests on the machine by killing stress process
   shell: pkill -9 stress
   tags: stop-stress
+  
